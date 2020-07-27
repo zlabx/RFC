@@ -33,7 +33,7 @@ sampleB2
 For adabooster,you may directly run pepline as follow:
 $ zlearn.py otutab txt design txt normalize tag ab_e 4 ab n 10000
 For randomforest,
-￥ zlearn.py otutab txt design txt normalize tag rf_e 4 rf n 10000
+$ zlearn.py otutab txt design txt normalize tag rf_e 4 rf n 10000
 ### Options
 The command-line arguments will show you what kinds of options you can pass to the random forest classifier. Of special note in `-n`, the number of trees in the forest.
 
