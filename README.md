@@ -1,19 +1,20 @@
-# slime2
+# zlearn
 This is a wrapper around SciKit Learn's Random Forest Classifier (rfc) routines. Given an OTU
 table and known classes for some of the samples, train a rfc on all the data and get the
 output: how well could the samples be classified, what's the out-of-bag error, and what are
 the important features?
-
+#Version
+v-0.1.0
 ### Input
 You'll need an **OTU table** in QIIME format (i.e., OTUs on the rows, samples on the columns). You'll also need a **classes file** that specifies what samples belong to what class.
 
 The classes file can have two formats: two-column or one-column. In one-column format, each line specifies a sample-class pair, like
 
 ```
-healthy_guy1	healthy
-healthy_guy2	healthy
-sick_guy1	sick
-sick_guy2	sick
+sampleA1	healthy
+sampleA2	healthy
+sampleB1	disease
+sampleB2	disease
 ```
 
 In two-column format, the first line of a block is the class name and the rest of the lines are sample names, like
@@ -21,12 +22,12 @@ In two-column format, the first line of a block is the class name and the rest o
 ```
 # you can put in a comment
 healthy
-healthy_guy1
-healthy_guy2
+sampleA1
+sampleA2
 
-sick
-sick_guy1
-sick_guy2
+disease
+sampleB1
+sampleB2
 ```
 
 ### Options
@@ -49,8 +50,3 @@ tag_scores.txt | the "mean" score (i.e., the fraction of samples correctly class
 
 ### Common gotcha's
 - If you get a `ValueError`, check the format of your classes file. Output from `R` can be problematic, since by default it writes the row numbers, which means you end up with too many columns.
-- Beware of outputting information from Excel, which will use Windows-style newlines *even* when running on a Mac. You'll have to ![convert the newlines](https://en.wikipedia.org/wiki/Newline#Conversion_utilities).
-
-### Upcoming features
-- Cross-validation
-- Universal newline support (cf. the gotcha's)
