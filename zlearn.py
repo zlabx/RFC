@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 
 '''
-    zlearn -- synthetic learning in microbial datasets
+    zlearn -- synthetic learning tool for microbial datasets
     Copyright (C) 2020 zhoujian 
-    https://github.com/zlabx/zlearn
+    Code source：https://github.com/zlabx/zlearn
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
-
     You should have received a copy of the GNU General Public License along
-    with this program and cite the papers from zlab
-
+    with this program and cite the following paper:
+    DOI:
+    
+    
 zj@zlab.ac.cn
 '''
 
