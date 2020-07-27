@@ -42,11 +42,11 @@ def parse_table_and_classes(table, klasses_fn, normalize=False, logt=None, keep=
         classes : list of classes in the same order as the indices in the dataframe
     '''
 
-    # read in the classes files
+    # 读取分类文件read in the classes files
     with open(klasses_fn) as f:
         lines = [l.rstrip() for l in f if not l.startswith("#")]
 
-    # figure out how to parse the classes file
+    # 处理文件figure out how to parse the classes file
     n_fields = len(lines[0].split())
     if n_fields == 1:
         samples, klasses = parse_one_column_klasses(lines)
@@ -55,11 +55,11 @@ def parse_table_and_classes(table, klasses_fn, normalize=False, logt=None, keep=
     else:
         raise RuntimeError("got {} fields in classes file".format(n_fields))
 
-    # read in the table
+    # 读取表格read in the table
     raw_table = pd.read_table(table, index_col=0).transpose()
 
-    # check to see that all the samples are columns
-    # complain if the classes file gave a sample not that's not in the OTU table
+    # 检测所有样本为列形式check to see that all the samples are columns
+    # 报错不在表格的样本complain if the classes file gave a sample not that's not in the OTU table
     cols = list(raw_table.index.values)
     missing_cols = [s for s in samples if s not in cols]
     if len(missing_cols) > 0:
