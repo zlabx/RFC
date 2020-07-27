@@ -39,7 +39,6 @@ For randomforest,
 zlearn.py otutab txt design txt normalize tag rf_e 4 rf n 1000000
 ```
 ##At least ten billion times was recommended for each classfier.
-### Options
 The command-line arguments will show you what kinds of options you can pass to the random forest classifier. Of special note in `-n`, the number of trees in the forest.
 
 Make sure you put the `--help` *after* you've specified the classifier (viz., `rf` or `ab`) so that you can see the options specific to that classifier.
@@ -50,7 +49,7 @@ All the output files are given a tag to help organize the output. By default, a 
 File name | Contents
 ----------|------------
 tag_classes.txt | the true classes that you specified
-tag_cmd.txt | the command you input to run slime2
+tag_cmd.txt | the command you input to run zlearn v1.0-alpha
 tag_featimp.txt | feature importances. column1 is the OTUs; col2 is the important; col3 is the cumulative importance
 tag_params.txt | the parameters used when making the RFC
 tag_results.txt | an explicit confusion matrix. if a sample was correctly classified, the line is "--". if a sample of true class X was misclassified as class Y, you get ">> X misclassified as Y".
