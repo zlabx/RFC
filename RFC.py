@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-    zlearn -- synthetic learning tool for microbial datasets
+    RFC-- synthetic learning tool for microbial datasets
     Copyright (C) 2020 zhoujian 
     Code source：https://github.com/zlabx/zlearn
     This program is free software; you can redistribute it and/or modify
