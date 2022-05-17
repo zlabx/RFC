@@ -11,32 +11,32 @@ You'll need an **OTU table** in QIIME format (i.e., OTUs on the rows, samples on
 The classes file can have two formats: two-column or one-column. In one-column format, each line specifies a sample-class pair, like
 
 ```
-sampleA1	healthy
-sampleA2	healthy
-sampleB1	disease
-sampleB2	disease
+sampleA1	Lowiron
+sampleA2	Lowiron
+sampleB1	Highiron
+sampleB2	Highiron
 ```
 
 In two-column format, the first line of a block is the class name and the rest of the lines are sample names, like
 
 ```
 # you can put in a comment
-healthy
+Lowiron
 sampleA1
 sampleA2
 
-disease
+Highiron
 sampleB1
 sampleB2
 ```
 ### Usages
 For adabooster,you may directly run pepline as follow:
 ```
-zlearn.py otutab txt design txt normalize tag ab_e 4 ab n 1000000
+RFC.py otutab txt design txt normalize tag ab_e 4 ab n 1000000
 ```
 For randomforest,
 ```
-zlearn.py otutab txt design txt normalize tag rf_e 4 rf n 1000000
+RFC.py otutab txt design txt normalize tag rf_e 4 rf n 1000000
 ```
 ##At least ten billion times was recommended for each classfier.
 The command-line arguments will show you what kinds of options you can pass to the random forest classifier. Of special note in `-n`, the number of trees in the forest.
