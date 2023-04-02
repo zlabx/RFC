@@ -58,3 +58,6 @@ tag_scores.txt | the "mean" score (i.e., the fraction of samples correctly class
 
 ### Common gotcha's
 - If you get a `ValueError`, check the format of your classes file. Output from `R` can be problematic, since by default it writes the row numbers, which means you end up with too many columns.
+
+
+#提供AUC值输出和交叉验证图形
