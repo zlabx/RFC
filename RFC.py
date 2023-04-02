@@ -2,7 +2,7 @@
 
 '''
     RFC-- synthetic learning tool for microbial datasets
-    Copyright (C) 2020 zhoujian 
+    Copyright (C) 2023 zhoujian 
     Code source：https://github.com/zlabx/zlearn
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,10 +15,21 @@
     
 zj@zlab.ac.cn
 '''
-
-import argparse, hashlib, sys, time, random, itertools, pickle
-import pandas as pd, numpy as np
+import argparse
+import hashlib
+import sys
+import time
+import random
+import itertools
+import pickle
+import pandas as pd
+import numpy as np
 import sklearn.ensemble
+import matplotlib.pyplot as plt
+from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.metrics import roc_auc_score, roc_curve, auc
+from scipy import interp
+
 
 def hash_tag(strs, tag_length=6):
     '''create a short tag using md5'''
@@ -30,12 +41,9 @@ def hash_tag(strs, tag_length=6):
 def parse_table_and_classes(table, klasses_fn, normalize=False, logt=None, keep=False):
     '''
     read an OTU table and a file that specifies the classes for each sample.
-
     the table has qiime format (rows=otus, columns=samples).
     the classes file can take one of two formats: one-column or two-column.
-
     keep : don't throw away columns that are not in the klasses file
-
     returns : (trimmed_table, classes)
         trimmed_table : pandas dataframe, with the samples without specified classes
             being dropped
@@ -234,6 +242,7 @@ def assign_weights(weights_string, klasses):
 
 
 if __name__ == '__main__':
+if __name__ == '__main__':
     p = argparse.ArgumentParser(description="zlearn", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     g = p.add_argument_group('io')
     g.add_argument('otu_table')
@@ -273,19 +282,17 @@ if __name__ == '__main__':
     sp.add_argument('pickled_classifier', type=argparse.FileType('rb'))
 
     args = p.parse_args()
-
-    # PREPROCESSING
-    # generate the tag, unless supplied
+    # 生成标签，除非已提供
     if args.tag is None:
         tag = hash_tag([open(args.otu_table).read(), open(args.classes).read()])
     else:
         tag = args.tag
 
-    # save the command line
+    # 保存命令行
     with open(tagged_name('cmd', tag), 'w') as f:
         f.write(' '.join(sys.argv) + '\n')
 
-    # CONSTRUCTION OF CLASSIFIER
+    # 构建分类器
     if args.constructor is None:
         raise RuntimeError('need to specify classifier on the command line')
     elif args.constructor == "load":
@@ -299,17 +306,17 @@ if __name__ == '__main__':
     else:
         table, klasses = parse_table_and_classes(args.otu_table, args.classes, normalize=args.normalize, logt=args.logtransform, keep=False)
 
-        # load the weights, if present
+        # 加载权重，如果有的话
         if args.weights:
             sample_weights = assign_weights(args.weights, klasses)
         else:
             sample_weights = None
 
-        # shuffle the classes, if requested
+        # 如果需要，打乱类别
         if args.shuffle:
             random.shuffle(klasses)
 
-        # extract the kwargs for the classifier's construction
+        # 提取分类器构建的 kwargs
         vargs = vars(args)
         constructor_kwargs = {k: vargs[k] for k in args.constructor_kwarg_keys}
 
@@ -331,3 +338,49 @@ if __name__ == '__main__':
             print("top features:")
             for i in range(10):
                 print("  {}\t{}".format(*classifier.ordered_features[i]))
+
+        # AUC 值和交叉验证图像
+        cv = StratifiedKFold(n_splits=5)
+        tprs = []
+        aucs = []
+        mean_fpr = np.linspace(0, 1, 100)
+
+        X = table.values
+        y = np.array([1 if k == klasses[0] else 0 for k in k
+        lasses])
+        
+        for train, test in cv.split(X, y):
+            classifier.fit(X[train], y[train])
+            probas_ = classifier.predict_proba(X[test])
+            fpr, tpr, thresholds = roc_curve(y[test], probas_[:, 1])
+            tprs.append(interp(mean_fpr, fpr, tpr))
+            tprs[-1][0] = 0.0
+            roc_auc = auc(fpr, tpr)
+            aucs.append(roc_auc)
+            plt.plot(fpr, tpr, lw=1, alpha=0.3,
+                     label='ROC fold %d (AUC = %0.2f)' % (len(aucs), roc_auc))
+
+        plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
+                 label='Chance', alpha=.8)
+
+        mean_tpr = np.mean(tprs, axis=0)
+        mean_tpr[-1] = 1.0
+        mean_auc = auc(mean_fpr, mean_tpr)
+        std_auc = np.std(aucs)
+        plt.plot(mean_fpr, mean_tpr, color='b',
+                 label=r'Mean ROC (AUC = %0.2f $\pm$ %0.2f)' % (mean_auc, std_auc),
+                 lw=2, alpha=.8)
+
+        std_tpr = np.std(tprs, axis=0)
+        tprs_upper = np.minimum(mean_tpr + std_tpr, 1)
+        tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
+        plt.fill_between(mean_fpr, tprs_lower, tprs_upper, color='grey', alpha=.2,
+                         label=r'$\pm$ 1 std. dev.')
+
+        plt.xlim([-0.05, 1.05])
+        plt.ylim([-0.05, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
